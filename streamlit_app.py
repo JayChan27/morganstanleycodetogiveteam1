@@ -1,7 +1,6 @@
 import base64
 import streamlit as st
 from audio_recorder_streamlit import audio_recorder
-import speech_recognition as sr
 import openai
 import tempfile
 from pydub import AudioSegment
@@ -127,25 +126,6 @@ def convert_to_wav(audio_bytes):
     temp_audio_filename = tempfile.mktemp(suffix=".wav")
     audio.export(temp_audio_filename, format="wav")
     return temp_audio_filename
-
-def get_text_from_audio(audio_bytes):
-    r = sr.Recognizer()
-    # Convert audio to WAV format
-    wav_filename = convert_to_wav(audio_bytes)    
-    try:
-        with sr.AudioFile(wav_filename) as source:
-            audio_data = r.record(source)
-            try:
-                text = r.recognize_google(audio_data)
-                return text
-            except sr.UnknownValueError:
-                st.error("Google Speech Recognition could not understand the audio.")
-            except sr.RequestError:
-                st.error("Could not request results from Google Speech Recognition service.")
-    finally:
-        # Ensure the temporary file is deleted
-        os.remove(wav_filename)    
-    return None
 
 def generate_story(user_input):
     with st.spinner('Generating story...'):
